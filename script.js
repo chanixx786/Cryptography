@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("monoDecryptResult").innerText = decryptedText;
   });
 
-  // Handle the encryption button click
+  // Playfair Cipher
   document.getElementById("playFairEncrypt").addEventListener("click", () => {
     const text = document.getElementById("playFairText").value;
     const key = document.getElementById("playFairKey").value;
@@ -42,17 +42,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const encrypted = encryptPlayfair(text, key);
     const decrypted = decryptPlayfair(encrypted, key);
 
-    document.getElementById(
-      "playFairResult"
-    ).innerText = `${encrypted}`;
-    document.getElementById(
-      "playFairDecryptResult"
-    ).innerText = `${decrypted}`;
+    document.getElementById("playFairResult").innerText = `${encrypted}`;
+    document.getElementById("playFairDecryptResult").innerText = `${decrypted}`;
   });
 
-
-// Caesar Cipher encryption function
-function encryptText(text, shift) {
+  // Caesar Cipher encryption function
+  function encryptText(text, shift) {
     return text
       .toUpperCase() // text to uppercase
       .split("") // Split the text into an array of characters
@@ -85,8 +80,8 @@ function encryptText(text, shift) {
   }
 
   // MonoAlphabetic Cipher
-   // Encryption function
-   function monoEncrypt(monoText, cipherAlphabet, alphabet) {
+  // Encryption function
+  function monoEncrypt(monoText, cipherAlphabet, alphabet) {
     let encryptedText = "";
 
     // Loop through each character of the input text
@@ -121,132 +116,109 @@ function encryptText(text, shift) {
     return decryptedText;
   }
 
-
   // Playfair Cipher
   // Set up the key matrix
-  function makeKeyMatrix(key) {
-    let used = new Set();
-    let matrix = [];
-    let flat = [];
+  function makeGrid(k) {
+    let seen = new Set();
+    let grid = [];
+    let temp = [];
 
-    // Clean up the key first
-    key = key
+    k = k
       .toUpperCase()
       .replace(/J/g, "I")
       .replace(/[^A-Z]/g, "");
 
-    // Add key chars first 
-    for (let char of key) {
-      if (!used.has(char)) {
-        used.add(char);
-        flat.push(char);
+    for (let x of k) {
+      if (!seen.has(x)) {
+        seen.add(x);
+        temp.push(x);
       }
     }
 
-    // Fill in unused letters
-    for (let c = 65; c <= 90; c++) {
-      let char = String.fromCharCode(c);
-      if (char === "J") continue;
-      if (!used.has(char)) {
-        flat.push(char);
+    for (let i = 65; i <= 90; i++) {
+      let x = String.fromCharCode(i);
+      if (x != "J" && !seen.has(x)) {
+        temp.push(x);
       }
     }
 
-    // Make a 5x5 grid
     for (let i = 0; i < 25; i += 5) {
-      matrix.push(flat.slice(i, i + 5));
+      grid.push(temp.slice(i, i + 5));
     }
-    return matrix;
+    return grid;
   }
 
-  // Find letter position in matrix
-  function findChar(matrix, char) {
+  function getSpot(grid, x) {
     for (let i = 0; i < 5; i++) {
       for (let j = 0; j < 5; j++) {
-        if (matrix[i][j] === char) {
+        if (grid[i][j] == x) {
           return [i, j];
         }
       }
     }
   }
 
-  // splitting into pairs
-  function prepareText(text) {
-    text = text
+  function makePairs(txt) {
+    txt = txt
       .toUpperCase()
       .replace(/J/g, "I")
       .replace(/[^A-Z]/g, "");
-    let pairs = [];
+    let out = [];
 
-    for (let i = 0; i < text.length; i += 2) {
-      if (i === text.length - 1) {
-        pairs.push(text[i] + "X");
-      } else if (text[i] === text[i + 1]) {
-        pairs.push(text[i] + "X");
+    for (let i = 0; i < txt.length; i += 2) {
+      if (i == txt.length - 1) {
+        out.push(txt[i] + "X");
+      } else if (txt[i] == txt[i + 1]) {
+        out.push(txt[i] + "X");
         i--;
       } else {
-        pairs.push(text[i] + text[i + 1]);
+        out.push(txt[i] + txt[i + 1]);
       }
     }
-    return pairs;
+    return out;
   }
 
-  function encryptPlayfair(text, key) {
-    let matrix = makeKeyMatrix(key);
-    let pairs = prepareText(text);
-    let result = "";
+  function encryptPlayfair(txt, k) {
+    let grid = makeGrid(k);
+    let pairs = makePairs(txt);
+    let out = "";
 
-    pairs.forEach((pair) => {
-      let [r1, c1] = findChar(matrix, pair[0]);
-      let [r2, c2] = findChar(matrix, pair[1]);
+    for (let p of pairs) {
+      let [r1, c1] = getSpot(grid, p[0]);
+      let [r2, c2] = getSpot(grid, p[1]);
 
-      if (r1 === r2) {
-        // Same row - move right
-        result += matrix[r1][(c1 + 1) % 5];
-        result += matrix[r2][(c2 + 1) % 5];
-      } else if (c1 === c2) {
-        // Same column - move down
-        result += matrix[(r1 + 1) % 5][c1];
-        result += matrix[(r2 + 1) % 5][c2];
+      if (r1 == r2) {
+        out += grid[r1][(c1 + 1) % 5] + grid[r2][(c2 + 1) % 5];
+      } else if (c1 == c2) {
+        out += grid[(r1 + 1) % 5][c1] + grid[(r2 + 1) % 5][c2];
       } else {
-        // Rectangle - swap columns
-        result += matrix[r1][c2];
-        result += matrix[r2][c1];
+        out += grid[r1][c2] + grid[r2][c1];
       }
-    });
-
-    return result;
+    }
+    return out;
   }
 
-  function decryptPlayfair(text, key) {
-    let matrix = makeKeyMatrix(key);
+  function decryptPlayfair(txt, k) {
+    let grid = makeGrid(k);
     let pairs = [];
 
-    // Split into pairs
-    for (let i = 0; i < text.length; i += 2) {
-      pairs.push(text.substr(i, 2));
+    for (let i = 0; i < txt.length; i += 2) {
+      pairs.push(txt.slice(i, i + 2));
     }
 
-    let result = "";
-    pairs.forEach((pair) => {
-      let [r1, c1] = findChar(matrix, pair[0]);
-      let [r2, c2] = findChar(matrix, pair[1]);
+    let out = "";
+    for (let p of pairs) {
+      let [r1, c1] = getSpot(grid, p[0]);
+      let [r2, c2] = getSpot(grid, p[1]);
 
-      if (r1 === r2) {
-        // Same row - move left
-        result += matrix[r1][(c1 + 4) % 5];
-        result += matrix[r2][(c2 + 4) % 5];
-      } else if (c1 === c2) {
-        // Same column - move up
-        result += matrix[(r1 + 4) % 5][c1];
-        result += matrix[(r2 + 4) % 5][c2];
+      if (r1 == r2) {
+        out += grid[r1][(c1 + 4) % 5] + grid[r2][(c2 + 4) % 5];
+      } else if (c1 == c2) {
+        out += grid[(r1 + 4) % 5][c1] + grid[(r2 + 4) % 5][c2];
       } else {
-        // Rectangle - swap columns
-        result += matrix[r1][c2];
-        result += matrix[r2][c1];
+        out += grid[r1][c2] + grid[r2][c1];
       }
-    });
-
-    return result;
+    }
+    return out;
   }
 });
