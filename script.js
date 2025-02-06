@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Playfair Cipher
   // Set up the key matrix
   function makeGrid(k) {
-    let seen = new Set();
+    let letter = new Set();
     let grid = [];
     let temp = [];
 
@@ -129,15 +129,15 @@ document.addEventListener("DOMContentLoaded", function () {
       .replace(/[^A-Z]/g, "");
 
     for (let x of k) {
-      if (!seen.has(x)) {
-        seen.add(x);
+      if (!letter.has(x)) {
+        letter.add(x);
         temp.push(x);
       }
     }
 
     for (let i = 65; i <= 90; i++) {
       let x = String.fromCharCode(i);
-      if (x != "J" && !seen.has(x)) {
+      if (x != "J" && !letter.has(x)) {
         temp.push(x);
       }
     }
