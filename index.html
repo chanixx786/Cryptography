@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div>
+      <div>
+        <h1>Caesar Cipher</h1><br>
+        <input
+          type="text"
+          id="plaintext"
+          name="text1"
+          placeholder="Enter Text"
+        />
+        <input type="text" id="shift" name="text2" placeholder="Enter shift" />
+        <br />
+        <button id="encrypt">Encrypt</button>
+        <button id="decrypt">Decrypt</button>
+        <br />
+        <label for="">Encrypted</label>
+        <p id="result"></p>
+        <br />
+        <label for="">Decrypted</label>
+        <p id="decryptResult"></p>
+      </div>
+      <div>
+        <h1>Monoalphabetic Cipher</h1>
+        <input type="text" id="monoalphabetic">
+        <button id="monoEncrypt">Encrypt</button>
+        <button id="monoDecrypt">Decrypt</button>
+        <br />
+        <label for="">Encrypted</label>
+        <p id="monoResult"></p>
+        <br />
+        <label for="">Decrypted</label>
+        <p id="monoDecryptResult"></p>
+      </div>
+      <div>
+        <h1>Playfair Cipher</h1>
+        <input type="text" id="playFairText">
+        <input type="text" id="playFairKey">
+        <br>
+        <button id="playFairEncrypt">Encrypt</button>
+        <button id="playFairDecrypt">Decrypt</button>
+        <br />
+        <label for="">Encrypted:</label>
+        <p id="playFairResult"></p>
+        <br />
+        <label for="">Decrypted</label>
+        <p id="playFairDecryptResult"></p>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
